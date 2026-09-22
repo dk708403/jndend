@@ -1,0 +1,10 @@
+# Normalize all text files to LF on commit (prevents encoding corruption on Vercel Linux)
+* text=auto eol=lf
+
+# Explicitly mark binary files so git never touches their line endings
+*.jpg binary
+*.png binary
+*.svg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
