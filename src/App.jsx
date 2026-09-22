@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import {
   motion,
   useScroll,
@@ -7,7 +7,6 @@ import {
   useMotionValue,
   useSpring,
   AnimatePresence,
-  useMotionValueEvent,
 } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Mail } from 'lucide-react';
 import './App.css';
@@ -1367,31 +1366,38 @@ function Footer() {
 function App() {
   const [loading, setLoading] = useState(true);
 
+  // Safety: always dismiss preloader after 4s max,
+  // so a timer/animation failure never leaves a white screen.
+  useEffect(() => {
+    const safety = setTimeout(() => setLoading(false), 4000);
+    return () => clearTimeout(safety);
+  }, []);
+
   return (
     <>
-      <AnimatePresence mode="wait">
-        {loading && <Preloader key="preloader" onComplete={() => setLoading(false)} />}
+      {/* Preloader is an OVERLAY — content always renders beneath it.
+          This guarantees no white screen even if onComplete never fires. */}
+      <AnimatePresence>
+        {loading && (
+          <Preloader key="preloader" onComplete={() => setLoading(false)} />
+        )}
       </AnimatePresence>
 
-      {!loading && (
-        <>
-          <CustomCursor />
-          <ScrollProgress />
-          <Navigation />
-          <main>
-            <Hero />
-            <Work />
-            <Sketchbook />
-            <Collections />
-            <About />
-            <Process />
-            <Materials />
-            <Statement />
-            <Contact />
-          </main>
-          <Footer />
-        </>
-      )}
+      <CustomCursor />
+      <ScrollProgress />
+      <Navigation />
+      <main>
+        <Hero />
+        <Work />
+        <Sketchbook />
+        <Collections />
+        <About />
+        <Process />
+        <Materials />
+        <Statement />
+        <Contact />
+      </main>
+      <Footer />
     </>
   );
 }
